@@ -29,7 +29,9 @@
               <button class="login-btn" @click="login">登录</button>
             </div>
             <div class="login-register">
-              <router-link to="/register" class="register">立刻注册</router-link>
+              <router-link to="/register" class="register"
+                >立刻注册</router-link
+              >
             </div>
           </div>
         </div>
@@ -39,7 +41,7 @@
 </template>
 
 <script>
-import axios from "axios";
+import { reqLogin } from "@api//user";
 export default {
   name: "Login",
   data() {
@@ -50,30 +52,19 @@ export default {
   },
   methods: {
     login() {
-      if(this.msg !== "" && this.msg !== "") {
-      if (this.msg === "13700000000" && this.num === "111111") {
-        axios
-          .post(`http://182.92.128.115/api/user/passport/login`, {
-            phone: this.msg,
-            password: this.num,
+      const { msg, num } = this;
+      reqLogin(msg, num)
+        .then((res) => {
+          console.log("res",res)
+          console.log(res.name,res.token)
+          this.$router.push({
+            path:"/",
+            name:res.name
           })
-          .then((res) => {
-            console.log(res);
-            this.$router.push({
-              path:"/",
-              name:res.data.data.name,
-            });
-            console.log(res.data.data.name)
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }else{
-        alert("用户名或密码不正确")
-      }
-      }else{
-        alert("用户名或密码不能为空")
-      }
+        })
+        .catch((err) => {
+          console.log("err",err);
+        });
     },
   },
 };
