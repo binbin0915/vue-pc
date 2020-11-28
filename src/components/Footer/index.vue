@@ -118,9 +118,10 @@ export default {
   padding: 20px;
   padding-left: 40px;
   display:flex;
-  justify-content:space-around;
+  justify-content:space-between;
   border-bottom: 1px solid #e4e1e1;
   height: 166px;
+  width: 1200px;
 }
 .footer-button div {
   width: 16.666%;
