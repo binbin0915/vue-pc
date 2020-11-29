@@ -19,27 +19,27 @@
 </template>
 
 <script>
-  import Brand from './Brand/Brand'
-  import Floor from './Floor/Floor'
-  import Like from './Like/Like'
-  import ListContainer from './ListContainer/ListContainer'
-  import Rank from './Rank/Rank'
-  import TodayRecommend from './TodayRecommend/TodayRecommend'
-  import TypeNav from './TypeNav'
-  export default {
-    name: 'Home',
-    components: {
-      Brand,
-      Floor,
-      Like,
-      ListContainer,
-      Rank,
-      TodayRecommend,
-      TypeNav
-    }
-  }
+import Brand from "./Brand/Brand";
+import Floor from "./Floor/Floor";
+import Like from "./Like/Like";
+import ListContainer from "./ListContainer/ListContainer";
+import Rank from "./Rank/Rank";
+import TodayRecommend from "./TodayRecommend/TodayRecommend";
+import TypeNav from "../../components/TypeNav";
+
+export default {
+  name: "Home",
+  components: {
+    Brand,
+    Floor,
+    Like,
+    ListContainer,
+    Rank,
+    TodayRecommend,
+    TypeNav,
+  },
+};
 </script>
 
 <style lang="less" scoped>
-
 </style>

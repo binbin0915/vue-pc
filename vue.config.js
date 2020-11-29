@@ -8,7 +8,7 @@ module.exports = {
                 // 配置路径别名(可以简写路径)
                 "@views":path.resolve(__dirname,"src/views"),
                 "@assets":path.resolve(__dirname,"src/assets"),
-                "@comps":path.resolve(__dirname,"src/comps"),
+                "@comps":path.resolve(__dirname,"src/components"),
                 "@utils":path.resolve(__dirname,"src/utils"),
                 "@api":path.resolve(__dirname,"src/api")
             },
