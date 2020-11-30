@@ -4,7 +4,8 @@ import Home from '../views/Home';
 import Register from '../views/Register';
 import Login from '../views/Login';
 import Search from '../views/Search';
-
+import A from '../views/Login/A'
+import B from '../views/Login/B'
 // 重写push和replace方法
 // 目的：为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push
@@ -42,7 +43,30 @@ export default new VueRouter({
 			// 当组件不加载显示时，meta中的参数不会传
 			meta:{
 				isFooterHide:true
-			}
+			},
+			children:[
+				{
+					path:"/",
+					component:A,
+					meta:{
+						isFooterHide:true
+					},
+				},
+				{
+					path:"a",
+					component:A,
+					meta:{
+						isFooterHide:true
+					},
+				},
+				{
+					path:"b",
+					component:B,
+					meta:{
+						isFooterHide:true
+					},
+				}
+			]
 		},
 		{
 			path: '/register',

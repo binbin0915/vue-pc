@@ -14,23 +14,51 @@
         <a href="###">秒杀</a>
       </nav>
       <div class="sort">
-        <div class="all-sort-list2">
-          <div class="item bo" v-for="category in categoryList" :key="category.categoryId">
+        <div class="all-sort-list2" @click="goBack">
+          <div
+            class="item bo"
+            v-for="category in categoryList"
+            :key="category.categoryId"
+          >
             <h3>
               <!-- 一级分类 -->
-              <a href="">{{category.categoryName}}</a>
+              <!-- <a href="">{{ category.categoryName }}</a> -->
+              <a
+                :data-categoryName="category.categoryName"
+                :data-categoryId="category.categoryId"
+                :data-categoryType="1"
+                >{{ category.categoryName }}</a
+              >
             </h3>
             <div class="item-list clearfix">
               <div class="subitem">
-                <dl class="fore" v-for="child in category.categoryChild" :key="child.categoryId">
+                <dl
+                  class="fore"
+                  v-for="child in category.categoryChild"
+                  :key="child.categoryId"
+                >
                   <dt>
                     <!-- 二级分类 -->
-                    <a href="">{{child.categoryName}}</a>
+                    <!-- <a href="">{{ child.categoryName }}</a> -->
+                    <a
+                      :data-categoryName="child.categoryName"
+                      :data-categoryId="child.categoryId"
+                      :data-categoryType="2"
+                      >{{ child.categoryName }}</a
+                    >
                   </dt>
                   <dd>
-                    <em v-for="grandChild in child.categoryChild" :key="grandChild.categoryId">
+                    <em
+                      v-for="grandChild in child.categoryChild"
+                      :key="grandChild.categoryId"
+                    >
                       <!-- 三级分类 -->
-                      <a href="">{{grandChild.categoryName}}</a>
+                      <!-- <a href="">{{ grandChild.categoryName }}</a> -->
+                      <a
+                      :data-categoryName="grandChild.categoryName"
+                      :data-categoryId="grandChild.categoryId"
+                      :data-categoryType="3"
+                      >{{ grandChild.categoryName }}</a>
                     </em>
                   </dd>
                 </dl>
@@ -44,19 +72,32 @@
 </template>
 
 <script>
-import { getBaseCategoryList } from "../../api/home";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "TypeNav",
-  data() {
-    return {
-      // 初始化响应数据
-      categoryList: [],
-    };
+  computed: {
+    ...mapState({
+      categoryList: (state) => state.home.categoryList.splice(0, 14),
+    }),
   },
-  // 不需要再提示错误了，因为拦截器中已经提示了错误了
-  async mounted() {
-    const result = await getBaseCategoryList();
-    this.categoryList = result.splice(0,14)
+  methods: {
+    ...mapActions(["getcategoryList"]),
+    goBack(e) {
+      // console.log(e.target.dataset)
+      const {categoryname,categoryid,categorytype} = e.target.dataset
+      // console.log(categoryname,categoryid,categorytype)
+      if(!categoryname) return
+      this.$router.push({
+        path:"/search",
+        query:{
+          categoryName:categoryname,
+          [`category${categorytype}Id`]:categoryid,
+        }
+      })
+    },
+  },
+  mounted() {
+    this.getcategoryList();
   },
 };
 </script>

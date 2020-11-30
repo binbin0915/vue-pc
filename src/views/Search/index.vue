@@ -1,10 +1,14 @@
 <template>
-  <div>Search...</div>
+  <div><A /></div>
 </template>
 
 <script>
+import A from '@comps/TypeNav'
 export default {
-    name:"Search"
+    name:"Search",
+    components:{
+      A
+    }
 }
 </script>
 
