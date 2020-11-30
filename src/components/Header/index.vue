@@ -51,8 +51,6 @@ export default {
     return {
       // 搜索的内容
       searchText: "",
-      Show: false,
-      Down: true,
     };
   },
   methods: {
@@ -77,6 +75,7 @@ export default {
       const location = {
         name: "search", // 使用命名路由
       };
+      // 添加query参数
       if (categoryName) {
         location.query = this.$route.query;
       }

@@ -9,7 +9,7 @@
             width="170"
             trigger="hover">
             <img src="./滴滴.png" class="img1"/>
-            <img slot="reference" src="./二维码.jpg" class="img2">
+            <img slot="reference" src="./二维码.png" class="img2">
         </el-popover>
   </div>
 </template>
@@ -31,6 +31,10 @@ top: 0px;
 .img1{
     width: 170px;
     height: 200px;
+}
+.img2{
+  width: 200px;
+  height: 200px;
 }
 .img2:hover{
     position: relative;

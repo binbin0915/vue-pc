@@ -1,12 +1,8 @@
 <template>
   <!-- 商品分类导航 -->
   <div class="type-nav">
-    <div
-      class="container"
-      @mouseenter="isSearchShow = true"
-      @mouseleave="isSearchShow = false"
-    >
-      <h2 class="all">全部商品分类</h2>
+    <div class="container" @mouseleave="isSearchShow = false">
+      <h2 class="all" @mouseenter="isSearchShow = true">全部商品分类</h2>
       <nav class="nav">
         <a href="###">服装城</a>
         <a href="###">美妆馆</a>
@@ -84,23 +80,42 @@ export default {
   name: "TypeNav",
   data() {
     return {
+      // 初始化响应式数据
       isHomeShow: this.$route.path === "/",
       isSearchShow: false,
     };
   },
   computed: {
+    // 当使用vuex模块化，这种方式就不行了
+    // ...mapState(["testCount", "categoryList"]),
+    // ...mapState(["testCount", "home.categoryList"]),
+    // ...mapState(["testCount", "home"]), 这种方式可以，需要使用 this.home.categoryList,太麻烦
     ...mapState({
-      categoryList: (state) => state.home.categoryList.splice(0, 14),
+      // 对象中的数据，就会传递给组件
+      // categoryList就是组件能接受到的数据
+      // 它的值是一个函数，函数内部会调用得到值
+      // 调用时会将所有vuex数据传递进去，就是state
+      categoryList: (state) => state.home.categoryList/* .splice(0, 14) */,
     }),
   },
   methods: {
+    // 函数可以直接写
+    // 注意：将来action函数名称和mutations函数名称不要重复
     ...mapActions(["getcategoryList"]),
+    // 跳转到search
     goBack(e) {
       const { categoryname, categoryid, categorytype } = e.target.dataset;
 
+      // 需求：如何获取需要的参数？
+      // 已知：得到触发事件目标元素
+      // 解决：给元素设置自定义属性 data-xxx，通过自定义属性得到需要的参数
+
+      // 判断是否是点中了a标签，才能跳转
       if (!categoryname) return;
-      
+
+      // 隐藏分类列表
       this.isSearchShow = false;
+
       const { searchText } = this.$route.params;
       const location = {
         name: "search",
@@ -109,6 +124,7 @@ export default {
           [`category${categorytype}Id`]: categoryid,
         },
       };
+      // 判断当前是否有params参数，有加上
       if (searchText) {
         location.params = { searchText };
       }
@@ -123,7 +139,10 @@ export default {
     },
   },
   mounted() {
-    this.getcategoryList();
+    if (!this.categoryList.length) {
+      // 调用vuex的action参数
+      this.getcategoryList();
+    }
   },
 };
 </script>

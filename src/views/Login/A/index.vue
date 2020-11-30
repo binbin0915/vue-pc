@@ -70,6 +70,7 @@ export default {
 }
 .login-content-input i{
   line-height: 30px;
+  font-size:20px
 }
 .login-content .login-content-input {
   display: flex;
