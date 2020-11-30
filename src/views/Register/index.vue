@@ -19,11 +19,11 @@
         </div>
         <div class="top">
           <label for="">登陆密码:</label>
-          <input type="text" />
+          <input type="password" />
         </div>
         <div class="top">
           <label for="">确认密码:</label>
-          <input type="text" />
+          <input type="password" />
         </div>
         <div class="register-content-contros">
           <input type="checkbox" name="协议" class="contros">

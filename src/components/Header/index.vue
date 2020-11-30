@@ -3,10 +3,10 @@
     <div class="header-top">
       <div class="header-header">
         <div class="header-left">
-          <p>尚品汇欢迎您！</p>
+          <p>尚品汇欢迎您！❀</p>
           <p>
             <span>请</span>
-            <router-link to="/login">登录</router-link> || <span>{{this.$router.dwadad}}</span>
+            <router-link to="/login">登录</router-link>
             <router-link to="/register" class="register">免费注册</router-link>
           </p>
         </div>
@@ -51,6 +51,8 @@ export default {
     return {
       // 搜索的内容
       searchText: "",
+      Show: false,
+      Down: true,
     };
   },
   methods: {
@@ -66,16 +68,21 @@ export default {
     //     }
     //   });
     // },
-    // 
+    //
     // 搜索功能函数
     search() {
       // 获取搜索的数据
       const { searchText } = this;
-      // 编程式导航：原因将来要做搜索功能（要发送请求）
+      const { categoryName } = this.$route.query;
       const location = {
-        name:"search" // 使用命名路由
+        name: "search", // 使用命名路由
+      };
+      if (categoryName) {
+        location.query = this.$route.query;
       }
-     location.params = searchText ? {searchText} : ""
+      // 编程式导航：原因将来要做搜索功能（要发送请求）
+
+      location.params = searchText ? { searchText } : "";
       this.$router.push(location);
     },
   },

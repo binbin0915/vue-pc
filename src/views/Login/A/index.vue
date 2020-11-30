@@ -2,11 +2,11 @@
   <div class="login-content">
             <form action="xxxx">
               <div class="login-content-input">
-                <i></i>
+                <i class="el-icon-user-solid"></i>
                 <input type="text" placeholder="手机号" v-model="msg" />
               </div>
               <div class="login-content-input">
-                <i></i>
+                <i class="el-icon-lock"></i>
                 <input type="password" placeholder="请输入密码" v-model="num" />
               </div>
               <div class="login-content-lable">
@@ -67,6 +67,9 @@ export default {
   padding: 18px;
   border-top: none;
   box-sizing: border-box;
+}
+.login-content-input i{
+  line-height: 30px;
 }
 .login-content .login-content-input {
   display: flex;

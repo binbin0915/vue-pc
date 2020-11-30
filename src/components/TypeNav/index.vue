@@ -1,7 +1,11 @@
 <template>
   <!-- 商品分类导航 -->
   <div class="type-nav">
-    <div class="container">
+    <div
+      class="container"
+      @mouseenter="isSearchShow = true"
+      @mouseleave="isSearchShow = false"
+    >
       <h2 class="all">全部商品分类</h2>
       <nav class="nav">
         <a href="###">服装城</a>
@@ -13,60 +17,63 @@
         <a href="###">有趣</a>
         <a href="###">秒杀</a>
       </nav>
-      <div class="sort">
-        <div class="all-sort-list2" @click="goBack">
-          <div
-            class="item bo"
-            v-for="category in categoryList"
-            :key="category.categoryId"
-          >
-            <h3>
-              <!-- 一级分类 -->
-              <!-- <a href="">{{ category.categoryName }}</a> -->
-              <a
-                :data-categoryName="category.categoryName"
-                :data-categoryId="category.categoryId"
-                :data-categoryType="1"
-                >{{ category.categoryName }}</a
-              >
-            </h3>
-            <div class="item-list clearfix">
-              <div class="subitem">
-                <dl
-                  class="fore"
-                  v-for="child in category.categoryChild"
-                  :key="child.categoryId"
+      <transition name="search">
+        <div class="sort" v-show="isHomeShow || isSearchShow">
+          <div class="all-sort-list2" @click="goBack">
+            <div
+              class="item bo"
+              v-for="category in categoryList"
+              :key="category.categoryId"
+            >
+              <h3>
+                <!-- 一级分类 -->
+                <!-- <a href="">{{ category.categoryName }}</a> -->
+                <a
+                  :data-categoryName="category.categoryName"
+                  :data-categoryId="category.categoryId"
+                  :data-categoryType="1"
+                  >{{ category.categoryName }}</a
                 >
-                  <dt>
-                    <!-- 二级分类 -->
-                    <!-- <a href="">{{ child.categoryName }}</a> -->
-                    <a
-                      :data-categoryName="child.categoryName"
-                      :data-categoryId="child.categoryId"
-                      :data-categoryType="2"
-                      >{{ child.categoryName }}</a
-                    >
-                  </dt>
-                  <dd>
-                    <em
-                      v-for="grandChild in child.categoryChild"
-                      :key="grandChild.categoryId"
-                    >
-                      <!-- 三级分类 -->
-                      <!-- <a href="">{{ grandChild.categoryName }}</a> -->
+              </h3>
+              <div class="item-list clearfix">
+                <div class="subitem">
+                  <dl
+                    class="fore"
+                    v-for="child in category.categoryChild"
+                    :key="child.categoryId"
+                  >
+                    <dt>
+                      <!-- 二级分类 -->
+                      <!-- <a href="">{{ child.categoryName }}</a> -->
                       <a
-                      :data-categoryName="grandChild.categoryName"
-                      :data-categoryId="grandChild.categoryId"
-                      :data-categoryType="3"
-                      >{{ grandChild.categoryName }}</a>
-                    </em>
-                  </dd>
-                </dl>
+                        :data-categoryName="child.categoryName"
+                        :data-categoryId="child.categoryId"
+                        :data-categoryType="2"
+                        >{{ child.categoryName }}</a
+                      >
+                    </dt>
+                    <dd>
+                      <em
+                        v-for="grandChild in child.categoryChild"
+                        :key="grandChild.categoryId"
+                      >
+                        <!-- 三级分类 -->
+                        <!-- <a href="">{{ grandChild.categoryName }}</a> -->
+                        <a
+                          :data-categoryName="grandChild.categoryName"
+                          :data-categoryId="grandChild.categoryId"
+                          :data-categoryType="3"
+                          >{{ grandChild.categoryName }}</a
+                        >
+                      </em>
+                    </dd>
+                  </dl>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -75,6 +82,12 @@
 import { mapState, mapActions } from "vuex";
 export default {
   name: "TypeNav",
+  data() {
+    return {
+      isHomeShow: this.$route.path === "/",
+      isSearchShow: false,
+    };
+  },
   computed: {
     ...mapState({
       categoryList: (state) => state.home.categoryList.splice(0, 14),
@@ -83,17 +96,30 @@ export default {
   methods: {
     ...mapActions(["getcategoryList"]),
     goBack(e) {
-      // console.log(e.target.dataset)
-      const {categoryname,categoryid,categorytype} = e.target.dataset
-      // console.log(categoryname,categoryid,categorytype)
-      if(!categoryname) return
-      this.$router.push({
-        path:"/search",
-        query:{
-          categoryName:categoryname,
-          [`category${categorytype}Id`]:categoryid,
-        }
-      })
+      const { categoryname, categoryid, categorytype } = e.target.dataset;
+
+      if (!categoryname) return;
+      
+      this.isSearchShow = false;
+      const { searchText } = this.$route.params;
+      const location = {
+        name: "search",
+        query: {
+          categoryName: categoryname,
+          [`category${categorytype}Id`]: categoryid,
+        },
+      };
+      if (searchText) {
+        location.params = { searchText };
+      }
+      this.$router.push(location);
+      // this.$router.push({
+      //   path: "/search",
+      //   query: {
+      //     categoryName: categoryname,
+      //     [`category${categorytype}Id`]: categoryid,
+      //   },
+      // });
     },
   },
   mounted() {
@@ -142,7 +168,13 @@ export default {
       position: absolute;
       background: #fafafa;
       z-index: 999;
-
+      &.search-enter {
+        height: 0px;
+      }
+      &.search-enter-active {
+        transition: height 0.5s;
+        overflow: hidden;
+      }
       .all-sort-list2 {
         .item {
           h3 {
