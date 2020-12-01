@@ -47,6 +47,7 @@
 <script>
 export default {
   name: "Header",
+
   data() {
     return {
       // 搜索的内容

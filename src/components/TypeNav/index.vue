@@ -95,7 +95,7 @@ export default {
       // categoryList就是组件能接受到的数据
       // 它的值是一个函数，函数内部会调用得到值
       // 调用时会将所有vuex数据传递进去，就是state
-      categoryList: (state) => state.home.categoryList/* .splice(0, 14) */,
+      categoryList: (state) => state.home.categoryList.slice(0, 14),
     }),
   },
   methods: {

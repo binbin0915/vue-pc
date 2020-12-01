@@ -3,39 +3,8 @@
     <div class="sortList clearfix">
       <div class="center">
         <!--banner轮播-->
-        <div class="swiper-container" id="mySwiper">
-          <div class="swiper-wrapper">
-            <div
-              class="swiper-slide"
-              style="position: absolute"
-            >
-              <!-- <img  :src=banner.imgUrl /> -->
-              <div class="block">
-                <el-carousel height="455px" style="width:721px">
-                  <el-carousel-item v-for="banner in banners" :key="banner.id">
-                    <h3 class="small"><img  :src=banner.imgUrl /></h3>
-                  </el-carousel-item>
-                </el-carousel>
-              </div>
-            </div>
-            <!-- <div class="swiper-slide">
-              <img src="./images/banner2.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner3.jpg" />
-            </div>
-            <div class="swiper-slide">
-              <img src="./images/banner4.jpg" />
-            </div> -->
-          </div>
-          <!-- 如果需要分页器 -->
-          <div class="swiper-pagination"></div>
-
-          <!-- 如果需要导航按钮 -->
-          <div class="swiper-button-prev"></div>
-          <div class="swiper-button-next"></div>
+        <Carousel :carouselList="banners" />
         </div>
-      </div>
       <div class="right">
         <div class="news">
           <h4>
@@ -111,19 +80,24 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+import Carousel from '@comps/Carousel'
+
 export default {
   name: "ListContainer",
   computed: {
     ...mapState({
-      banners: (state) => state.home.banners,
+      banners: (state) => state.home.banners.splice(0,14),
     }),
   },
   methods: {
     ...mapActions(["reqgetBanners"]),
   },
-  mounted() {
-    this.reqgetBanners();
+  async mounted() {
+   await this.reqgetBanners();
   },
+  components:{
+    Carousel
+  }
 };
 </script>
 
