@@ -10,24 +10,25 @@
       <div class="register-content">
         <div class="register-content-top top">
           <label for="">手机号:</label>
-          <input type="text" placeholder="请输入你的手机号" />
+          <input type="text" placeholder="请输入你的手机号" v-model="phone" />
         </div>
         <div class="top">
           <label for="">验证码:</label>
-          <input type="text" />
-          <img src="/api/user/passport/code" alt="">
+          <input type="text" v-model="code" />
+          <img src="/api/user/passport/code" alt="" />
         </div>
         <div class="top">
           <label for="">登陆密码:</label>
-          <input type="password" />
+          <input type="password" v-model="password" />
         </div>
         <div class="top">
           <label for="">确认密码:</label>
           <input type="password" />
         </div>
         <div class="register-content-contros">
-          <input type="checkbox" name="协议" class="contros">
+          <input type="checkbox" name="协议" class="contros" />
           <span>同意协议并注册《尚品汇用户协议》</span>
+          <button @click="register">注册</button>
         </div>
       </div>
     </div>
@@ -35,8 +36,32 @@
 </template>
 
 <script>
+import { reqRegister } from "@api/register.js";
 export default {
   name: "Register",
+  data() {
+    return {
+      phone: "",
+      password: "",
+      code: "",
+      num: 5,
+    };
+  },
+  methods: {
+    register() {
+      const { phone, password, code } = this;
+      reqRegister(phone, password, code)
+        .then((res) => {
+          console.log(res);
+              this.$router.push({
+                path: "login",
+              });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
 };
 </script>
 
@@ -77,7 +102,7 @@ export default {
   display: inline-block;
   text-align: right;
 }
-.register-content div input{
+.register-content div input {
   width: 270px;
   height: 38px;
   padding-left: 8px;
@@ -85,7 +110,7 @@ export default {
   border: 1px solid #999;
   box-sizing: border-box;
 }
-.register-content-contros{
+.register-content-contros {
   text-align: center;
   padding: 0;
   margin: 0;
@@ -93,6 +118,6 @@ export default {
 .register-content-contros .contros {
   width: 12px;
   height: 12px;
-  vertical-align: middle
+  vertical-align: middle;
 }
 </style>

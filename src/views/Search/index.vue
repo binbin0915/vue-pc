@@ -11,38 +11,84 @@
             </li>
           </ul>
           <ul class="fl sui-tag">
-            <li class="with-x">手机</li>
-            <li class="with-x">iphone<i>×</i></li>
-            <li class="with-x">华为<i>×</i></li>
-            <li class="with-x">OPPO<i>×</i></li>
+            <li class="with-x" v-show="options.keyword" @click="delkeyword">
+              关键词: {{ options.keyword }}<i>×</i>
+            </li>
+            <li
+              class="with-x"
+              v-show="options.categoryName"
+              @click="delcategoryName"
+            >
+              分类名称: {{ options.categoryName }}<i>×</i>
+            </li>
+            <li class="with-x" v-show="options.trademark" @click="deltrademark">
+              品牌: {{ options.trademark.split(":")[1] }}<i>×</i>
+            </li>
+            <li
+              class="with-x"
+              v-for="(props, index) in options.props"
+              :key="props"
+              @click="delProps(index)"
+            >
+              {{ props.split(":")[2] }}:{{ props.split(":")[1] }}<i>×</i>
+            </li>
           </ul>
         </div>
 
         <!--selector-->
-        <SearchSelector />
+        <SearchSelector :addTrademark="addTrademark" @add-props="addProps" />
 
         <!--details-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li
+                  :class="{ active: options.order.indexOf('1') > -1 }"
+                  @click="Allorder('1')"
+                >
+                  <a
+                    >综合<i
+                      :class="{
+                        iconfont: true,
+                        'icon-direction-down': isAllDown, // 降序图标
+                        'icon-direction-up': !isAllDown, // 升序图标
+                      }"
+                    ></i
+                  ></a>
                 </li>
                 <li>
-                  <a href="#">销量</a>
+                  <a>销量</a>
                 </li>
                 <li>
-                  <a href="#">新品</a>
+                  <a>新品</a>
                 </li>
                 <li>
-                  <a href="#">评价</a>
+                  <a>评价</a>
                 </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li
+                  @click="Allorder('2')"
+                  :class="{ active: options.order.indexOf('2') > -1 }"
+                >
+                  <a class="aaaa"
+                    >价格<span>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-up-bold': true,
+                          deactive:
+                            options.order.indexOf('2') > -1 && ispriceDown,
+                        }"
+                      ></i>
+                      <i
+                        :class="{
+                          iconfont: true,
+                          'icon-arrow-down-bold': true,
+                          deactive:
+                            options.order.indexOf('2') > -1 && !ispriceDown,
+                        }"
+                      ></i> </span
+                  ></a>
                 </li>
               </ul>
             </div>
@@ -59,7 +105,7 @@
                   <div class="price">
                     <strong>
                       <em>¥</em>
-                      <i>{{goods.price}}</i>
+                      <i>{{ goods.price }}</i>
                     </strong>
                   </div>
                   <div class="attr">
@@ -67,7 +113,7 @@
                       target="_blank"
                       href="item.html"
                       title="促销信息，下单即赠送三个月CIBN视频会员卡！【小米电视新品4A 58 火爆预约中】"
-                      >{{goods.title}}</a
+                      >{{ goods.title }}</a
                     >
                   </div>
                   <div class="commit">
@@ -88,35 +134,18 @@
               </li>
             </ul>
           </div>
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>{{totalPages}}</span></div>
-            </div>
-          </div>
+          <el-pagination
+            background
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="options.pageNo"
+            :pager-count="7"
+            :page-sizes="[5, 10, 15, 20]"
+            :page-size="5"
+            layout=" prev, pager, next,total, sizes, jumper"
+            :total="total"
+          >
+          </el-pagination>
         </div>
       </div>
     </div>
@@ -124,19 +153,162 @@
 </template>
 
 <script>
-import {mapGetters,mapActions} from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import TypeNav from "@comps/TypeNav";
 import SearchSelector from "./SearchSelector/SearchSelector";
 export default {
   name: "Search",
-  computed:{
-    ...mapGetters(["goodsList","totalPages"]),
+  data() {
+    return {
+      options: {
+        category1Id: "", // 一级分类id
+        category2Id: "", // 二级分类id
+        category3Id: "", // 三级分类id
+        categoryName: "", // 分类名称
+        keyword: "", // 搜索内容（搜索关键字）
+        order: "1:desc", // 排序方式：1：综合排序 2：价格排序 asc：升序 desc：降序
+        pageNo: 1, // 分页的页码（第几页）
+        pageSize: 5, // 分页的每页商品数量
+        props: [], // 商品属性
+        trademark: "", // 品牌
+      },
+      isAllDown: true,
+      ispriceDown: true,
+    };
   },
-  methods:{
-    ...mapActions(["GetProductList"])
+  computed: {
+    ...mapGetters(["goodsList", "total"]),
+  },
+  watch: {
+    // 监视$route的变化：监视地址的变化
+    $route() {
+      this.updateProductList();
+    },
+  },
+  methods: {
+    ...mapActions(["GetProductList"]),
+
+    // 更新商品列表
+    updateProductList(pageNo = 1) {
+      const { searchText: keyword } = this.$route.params;
+      const {
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+      } = this.$route.query;
+      const options = {
+        ...this.options, // 携带上所有初始化数据
+        keyword, // 以下会覆盖上面的属性
+        categoryName,
+        category1Id,
+        category2Id,
+        category3Id,
+        pageNo
+      };
+
+      this.options = options;
+      this.GetProductList(options);
+    },
+
+    // 删除关键字
+    delkeyword() {
+      // 清除options.keyword
+      this.options.keyword = "";
+      // 清空header组件的keyword
+      this.$bus.$emit("clearKeyword");
+      // 清除路径params参数
+      // $route上面的属性是只读属性，不能修改
+      this.$router.replace({
+        name: "search",
+        query: this.$route.query,
+      });
+    },
+
+    // 删除分类
+    delcategoryName() {
+      this.options.category1Id = "";
+      this.options.category2Id = "";
+      this.options.category3Id = "";
+      this.options.categoryName = "";
+
+      this.$router.replace({
+        name: "search",
+        params: this.$route.params,
+      });
+    },
+
+    // 添加品牌
+    addTrademark(trademark) {
+      this.options.trademark = trademark;
+      this.updateProductList();
+    },
+
+    // 删除品牌
+    deltrademark() {
+      this.options.trademark = "";
+      this.updateProductList();
+    },
+
+    // 添加品牌属性
+    addProps(props) {
+      this.options.props.push(props);
+      this.updateProductList();
+    },
+
+    // 删除品牌属性
+    delProps(index) {
+      this.options.props.splice(index, 1);
+      this.updateProductList();
+    },
+
+    // 设置排序的方法  1:desc/asc 综合降序/升序  2:desc/asc 价钱降序/升序
+    Allorder(order) {
+      let [orderNum, orderType] = this.options.order.split(":");
+      // 相等点击的就是一次，不改变图标
+      // 不相等点击的就是第二次，改变图标
+      if (orderNum === order) {
+        // 看order是1改综合排序
+        // 看order是2改价格排序
+        if (order === "1") {
+          this.isAllDown = !this.isAllDown;
+        } else {
+          this.ispriceDown = !this.ispriceDown;
+        }
+        orderType = orderType === "desc" ? "asc" : "desc";
+      } else {
+        if (order === "1") {
+          // 点击的是综合的，让它的排序等于它原来图标的值，如果是true，图标就是朝下，也就是降序，false就是升序
+          orderType = this.isAllDown ? "desc" : "asc";
+        } else {
+          // 让价格默认是升序，排序方式也默认是升序
+          this.ispriceDown = false;
+          orderType = "asc";
+        }
+      }
+
+      this.options.order = `${order}:${orderType}`;
+      this.updateProductList();
+    },
+
+    // 当每页条数发送变化触发
+    handleSizeChange(pageSize) {
+      this.options.pageSize = pageSize;
+      this.updateProductList();
+    },
+
+    // 当页码发生变化触发
+    handleCurrentChange(pageNo) {
+      // this.options.pageNo = pageNo;
+      this.updateProductList(pageNo);
+    },
+
   },
   mounted() {
-    this.GetProductList()
+    // 一上来发送请求会携带参数
+    // 解构赋值 params 中 searchText 属性
+    // 将 searchText 重命名为 keyword
+    this.updateProductList();
   },
   components: {
     SearchSelector,
@@ -146,6 +318,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+a.aaaa span i {
+  line-height: 8px;
+  font-size: 12px;
+}
 .main {
   margin: 10px 0;
 
@@ -247,11 +423,25 @@ export default {
               line-height: 18px;
 
               a {
-                display: block;
+                // display: block;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
                 cursor: pointer;
                 padding: 11px 15px;
                 color: #777;
                 text-decoration: none;
+                i {
+                  padding-left: 5px;
+                }
+                span {
+                  display: flex;
+                  flex-direction: column;
+                  line-height: 8px;
+                  .deactive {
+                    color: rgba(255, 255, 255, 0.5);
+                  }
+                }
               }
 
               &.active {

@@ -24,7 +24,8 @@ export default {
 		async reqgetFloors({commit}) {
 			const floors = await getFloors()
 			commit("REQ_GETFLOORS",floors)
-		}
+		},
+		
 	},
 	mutations: {
 		GET_BASECATEGOTYLIST(state, categoryList) {

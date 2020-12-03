@@ -47,7 +47,6 @@
 <script>
 export default {
   name: "Header",
-
   data() {
     return {
       // 搜索的内容
@@ -83,8 +82,23 @@ export default {
       // 编程式导航：原因将来要做搜索功能（要发送请求）
 
       location.params = searchText ? { searchText } : "";
-      this.$router.push(location);
+      // 判断当前的路由名字是否是search
+      if (this.$route.name === "search") {
+        // 如果是，就替换掉记录
+        this.$router.replace(location);
+        // 不是就添加记录
+      } else {
+        this.$router.push(location);
+      }
     },
+  },
+  mounted() {
+    this.$bus.$on("clearKeyword", () => {
+      this.searchText = "";
+    });
+    this.$bus.$on("add",()=>{
+      this.searchText = "";
+    })
   },
 };
 </script>

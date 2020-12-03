@@ -49,7 +49,7 @@ export default {
   },
   methods: {
     initSwiper() {
-      // 使用 this.$refs.swiper 取代 .swiper-container
+      // 使用 this.$refs.swiper 取代 .sw  `iper-container
       // 使用 this.$refs.swiper 才能保证轮播图组件使用的自己的swiper
 
       this.swiper = new Swiper(this.$refs.swiper, {
@@ -75,6 +75,7 @@ export default {
     // 轮播图数据要有 且 轮播图DOM元素要渲染完成 才能 newSwiper
     if(!this.carouselList.length) return
     this.initSwiper();
+    this.$bus.$emit("add")
   },
 };
 </script>

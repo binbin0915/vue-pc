@@ -1,4 +1,4 @@
-import { reqGetProductList } from '@api/search.js';
+import { reqGetProductList } from '@api/search';
 
 export default {
 	state: {
@@ -6,7 +6,6 @@ export default {
             trademarkList: [],
             attrsList: [],
             goodsList: [],
-            totalPages:""
         },
 		
 	},
@@ -22,7 +21,10 @@ export default {
         },
         totalPages(state) {
             return state.ProductList.totalPages
-        }
+		},
+		total(state){
+			return state.ProductList.total
+		}
 	},
 
 	actions: {
