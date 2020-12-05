@@ -3,11 +3,15 @@
     <div class="header-top">
       <div class="header-header">
         <div class="header-left">
-          <p>尚品汇欢迎您！❀</p>
+          <p>京东欢迎您！</p>
           <p>
-            <span>请</span>
-            <router-link to="/login">登录</router-link>
-            <router-link to="/register" class="register">免费注册</router-link>
+            <span>{{ name }}</span>
+            <a @click="del" href="###" v-show="name">退出</a>
+            <span v-show="!name">请</span>
+            <router-link to="/login" v-show="!name">登录</router-link>
+            <router-link to="/register" class="register" v-show="!name"
+              >免费注册</router-link
+            >
           </p>
         </div>
         <div class="header-right">
@@ -24,7 +28,7 @@
     </div>
     <div class="header-bottom">
       <router-link class="header-bottom-left" to="/">
-        <img src="./images/logo.png" alt="" />
+        <img src="./images/login.jpg" alt="" />
       </router-link>
       <div class="header-bottom-right">
         <form @submit.prevent="search">
@@ -47,13 +51,22 @@
 <script>
 export default {
   name: "Header",
+
   data() {
+    const name = localStorage.getItem("name");
     return {
       // 搜索的内容
       searchText: "",
+      name,
     };
   },
   methods: {
+    del() {
+      localStorage.removeItem("name");
+      if (window.confirm(`是否要退出当前登录`)) {
+        location.reload([true]);
+      }
+    },
     // 搜索功能函数
     // search() {
     //   const { searchText } = this;
@@ -93,12 +106,13 @@ export default {
     },
   },
   mounted() {
+    // console.log(localStorage.getItem("name"))
     this.$bus.$on("clearKeyword", () => {
       this.searchText = "";
     });
-    this.$bus.$on("add",()=>{
+    this.$bus.$on("add", () => {
       this.searchText = "";
-    })
+    });
   },
 };
 </script>
@@ -156,6 +170,7 @@ export default {
 }
 .header-bottom-left img {
   width: 175px;
+  height: 70px;
   margin: 25px 45px;
 }
 .header-bottom-right {

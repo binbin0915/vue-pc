@@ -28,7 +28,7 @@
         <div class="register-content-contros">
           <input type="checkbox" name="协议" class="contros" />
           <span>同意协议并注册《尚品汇用户协议》</span>
-          <button @click="register">注册</button>
+          <button @click="register" class="register-btn">注册</button>
         </div>
       </div>
     </div>
@@ -119,5 +119,19 @@ export default {
   width: 12px;
   height: 12px;
   vertical-align: middle;
+}
+.register-btn{
+  // display:block;
+  // position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  background-color:red;
+  border: 1px solid red;
+  outline: none;
+  height: 40px;
+  margin-top: 10px;
+  margin-left: 490px;
 }
 </style>

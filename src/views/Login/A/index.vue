@@ -3,12 +3,18 @@
     <form action="xxxx">
       <div class="login-content-input">
         <i class="el-icon-user-solid"></i>
-        <input type="text" placeholder="手机号" v-model="msg" />
+        <input type="text" placeholder="手机号" v-model="phone" />
+        <p class="span" v-show="isShow">请输入11位手机号!</p>
       </div>
       <div class="login-content-input">
         <i class="el-icon-lock"></i>
-        <input type="password" placeholder="请输入密码" v-model="num" />
+
+        <input type="password" placeholder="请输入密码" v-model="password" />
+        <p class="span" v-show="isDown">请输入6-12位数字组合的密码</p>
       </div>
+      <label for="">
+        <input type="checkbox" @click="Rememberpassword" />记住密码
+      </label>
       <div class="login-content-lable">
         <label for="">
           <input type="checkbox" />
@@ -32,27 +38,53 @@ export default {
   name: "A",
   data() {
     return {
-      msg: "",
-      num: "",
+      phone: "",
+      password: "",
+      isShow: false,
+      isDown: false,
     };
   },
   methods: {
     login() {
-      const { msg, num } = this;
-      reqLogin(msg, num)
-        .then((res) => {
-          console.log("res", res);
-          console.log(res.name, res.token);
-          this.$router.push({
-            path: "/",
-            name: name,
-          });
-          // sessionStorage.setItem(res.name, res.token);
-        })
-        .catch((err) => {
-          console.log("err", err);
-        });
+      const { phone, password } = this;
+      if (/^1[345678]\d{9}$/.test(phone)) {
+        this.isShow = false;
+        if (/^[\d]{6,12}$/.test(password)) {
+          this.isDown = false;
+          reqLogin(phone, password)
+            .then((res) => {
+              // console.log("res", res);
+              // console.log(res.name, res.token);
+              this.$router.push({
+                path: "/",
+                name: name,
+              });
+              location.reload([true]);
+              // sessionStorage.setItem(res.name, res.token);
+              localStorage.setItem("name", res.name);
+              localStorage.setItem("token", res.token);
+            })
+            .catch((err) => {
+              console.log("err", err);
+            });
+        } else {
+          this.isDown = true;
+        }
+      } else {
+        this.isShow = true;
+      }
     },
+    Rememberpassword() {
+        if (localStorage.getItem("password")) {
+          localStorage.removeItem("password");
+        } else {
+          localStorage.setItem("password", this.password);
+        }
+    },
+  },
+  mounted() {
+    const password = localStorage.getItem("password");
+    this.password = password;
   },
 };
 </script>
@@ -71,9 +103,9 @@ export default {
   font-size: 20px;
 }
 .login-content .login-content-input {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 22px;
+  // display: flex;
+  // justify-content: flex-end;
+  margin-bottom: 15px;
 }
 .login-content .login-content-input i {
   width: 32px;
@@ -99,6 +131,11 @@ export default {
   padding-left: 8px;
   border-radius: 0 2px 2px 0;
   outline: none;
+}
+form .span {
+  font-size: 16px;
+  color: #e1251b;
+  letter-spacing: 5px;
 }
 .login-content-lable {
   display: flex;
