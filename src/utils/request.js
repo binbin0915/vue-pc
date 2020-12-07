@@ -6,7 +6,7 @@ import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { Message } from 'element-ui';
 import getuserTempId from "@utils/getuserTempId"
-
+import store from "../store"
 
 /* 
 userTempId 未登录用户的临时id
@@ -35,8 +35,8 @@ const instance = axios.create({
 	headers: {}
 });
 
-const userTempId = getuserTempId()
-const token = localStorage.getItem("token")
+// const userTempId = getuserTempId()
+// const token = localStorage.getItem("token")
 // 设置请求拦截器
 instance.interceptors.request.use(
 	(config) => {
@@ -45,9 +45,12 @@ instance.interceptors.request.use(
 
 		// 开始进度条
 		NProgress.start();
-
-		config.headers.userTempId = userTempId;
-		config.headers.token = token;
+		const token = store.state.user.token;
+		if(token){
+			config.headers.token = token
+		}
+		// config.headers.userTempId = userTempId;
+		// config.headers.token = token;
 
 		return config;
 	}

@@ -7,8 +7,12 @@ import Search from '../views/Search';
 import A from '../views/Login/A';
 import B from '../views/Login/B';
 import Detail from '../views/Detail';
-import AddCartSuccess from "../views/AddCartSuccess" 
-import ShopCart from '../views/ShopCart'
+import AddCartSuccess from '../views/AddCartSuccess';
+import ShopCart from '../views/ShopCart';
+import Trade from '@views/Trade';
+import Pay from '@views/Pay';
+import PaySuccess from '@views/PaySuccess';
+import Center from '@views/Center';
 // 重写push和replace方法
 // 目的：为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push;
@@ -90,15 +94,35 @@ export default new VueRouter({
 			component: Detail
 		},
 		{
-			name:"AddCartSuccess",
-			path:"/addCartSuccess",
-			component:AddCartSuccess
+			name: 'AddCartSuccess',
+			path: '/addCartSuccess',
+			component: AddCartSuccess
 		},
 		{
-			name:"ShopCart",
-			path:"/shopcart",
-			component:ShopCart
+			name: 'ShopCart',
+			path: '/shopcart',
+			component: ShopCart
 		},
+		{
+			name: 'Trade',
+			path: '/trade',
+			component: Trade
+		},
+		{
+			name: 'Pay',
+			path: '/pay',
+			component: Pay
+		},
+		{
+			name: 'PaySuccess',
+			path: '/paysuccess',
+			component: PaySuccess
+		},
+		{
+			name: 'Center',
+			path: '/center',
+			component: Center
+		}
 	],
 	// 每次切换路由页面滚动条位置
 	scrollBehavior() {

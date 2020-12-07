@@ -18,7 +18,6 @@
               name="chk_list"
               :checked="cart.isChecked"
               v-model="cart.isChecked"
-              @click="Checked(cart.skuId, cart.isChecked)"
               v-bind:true-value="checka"
               v-bind:false-value="checkb"
             />
@@ -47,7 +46,7 @@
               :value="cart.skuNum"
               minnum="1"
               class="itxt"
-              :style="{outline:'none'}"
+              :style="{ outline: 'none' }"
               @blur="update(cart.skuId, cart.skuNum, $event)"
               @input="formatSkuNum"
             />
@@ -66,7 +65,7 @@
           <li class="cart-list-con7">
             <a class="sindelet" @click="del(cart.skuId)">删除</a>
             <br />
-            <a href="#none">移到收藏</a>
+            <a>移到收藏</a>
           </li>
         </ul>
       </div>
@@ -77,9 +76,9 @@
         <span>全选</span>
       </div>
       <div class="option">
-        <a @click="delskuName">删除选中的商品</a>
-        <a href="#none">移到我的关注</a>
-        <a href="#none">清除下柜商品</a>
+        <a>删除选中的商品</a>
+        <a>移到我的关注</a>
+        <a>清除下柜商品</a>
       </div>
       <div class="money-box">
         <div class="chosed">
@@ -91,7 +90,7 @@
           <i class="summoney">{{ totalPrice }}</i>
         </div>
         <div class="sumbtn">
-          <a class="sum-btn" href="###" target="_blank">结算</a>
+          <a class="sum-btn" @click="settlement">结算</a>
         </div>
       </div>
     </div>
@@ -115,6 +114,7 @@ export default {
         return p + (c.isChecked === 1 ? 1 : 0);
       }, 0);
     },
+
     // 计算全选的值
     isShow: {
       get() {
@@ -148,31 +148,31 @@ export default {
   methods: {
     // 让数量框只能输入数字
     formatSkuNum(e) {
-     let skuNum = e.target.value.replace(/\D+/g, "");
-      if(skuNum < 1) {
+      let skuNum = e.target.value.replace(/\D+/g, "");
+      if (skuNum < 1) {
         // 商品数量不能小于1
-        skuNum = 1
-      } else if(skuNum > 100) {
+        skuNum = 1;
+      } else if (skuNum > 100) {
         // 同时商品库存不能大于100
-        skuNum  = 100
+        skuNum = 100;
       }
-      e.target.value = skuNum
+      e.target.value = skuNum;
     },
 
     // 输入改变商品数量
     update(skuId, skuNum, e) {
       // 当前商品数量是10，e.target.value 6 --> -4  6 - 10
-      if(+e.target.value === skuNum) return
+      if (+e.target.value === skuNum) return;
       this.updateCartCount({ skuId, skuNum: e.target.value - skuNum });
     },
 
-    async delskuName() {
-      let skuName = this.cartList.filter((cart) => {
-        cart.isChecked === "0";
-      });
-      console.log(skuName);
-      //  await this.delCart()
-    },
+    // 删除选中商品
+    // delskuName() {
+    //   // console.log(this.cartList)
+    //   const cartList = this.cartList.find((cart) => cart.isChecked !== 1);
+    //   console.log(cartList);
+    //   // this.cartList = cartList;
+    // },
     ...mapActions([
       "getCartList",
       "updateCartCount",
@@ -183,7 +183,6 @@ export default {
     async updateCart(skuId, skuNum) {
       // 更新商品
       await this.updateCartCount({ skuId, skuNum });
-
       //  刷新页面
       // this.getCartList();
     },
@@ -196,11 +195,20 @@ export default {
       }
     },
 
-    Checked(skuId, isChecked) {
-      // this.updateCartCheck({ skuId, isChecked });
-      console.log(isChecked);
-      // this.getCartList();
-    },
+    // Checked(skuId, isChecked) {
+    //   // this.updateCartCheck({ skuId, isChecked });
+    //   console.log(isChecked);
+    //   // this.getCartList();
+    // },
+
+    // 结算
+    settlement(){
+      this.$router.push({
+        name:"Trade",
+        params:this.cartList
+      })
+      console.log(this.cartList)
+    }
   },
   mounted() {
     this.getCartList();
