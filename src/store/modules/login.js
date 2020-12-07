@@ -1,19 +1,15 @@
-import {reqLogin} from "@api/user"
+import { reqLogin } from '@api/user';
 
 export default {
-    state:{
+	state: {},
 
-    },
+	getters: {},
 
-    getters:{
+	actions: {
+		login({ commit }, { phone, password }) {
+			reqLogin(phone, password);
+		}
+	},
 
-    },
-
-    actions:{
-
-    },
-
-    mutations:{
-        
-    }
-}
+	mutations: {}
+};

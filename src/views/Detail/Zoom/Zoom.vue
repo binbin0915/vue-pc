@@ -1,10 +1,10 @@
 <template>
   <div class="spec-preview" @mousemove="updateXY" >
     x:{{x}}-y:{{y}}
-    <img :src="`${skuDefaultImg}`"/>
+    <img :src="imgUrl"/>
     <div class="event"></div>
     <div class="big">
-      <img :src="`${skuDefaultImg}`" />
+      <img :src="bigImgUrl" />
     </div>
     <div class="mask" ref="div"></div>
   </div>
@@ -20,14 +20,15 @@ export default {
     };
   },
   props: {
-    skuDefaultImg: String,
+    imgUrl:String,
+    bigImgUrl:String
   },
   methods: {
     updateXY(e) {
       this.x = e.offsetX;
       this.y = e.offsetY;
-      console.log(this.$refs.div.offsetWidth)
-      console.log(this.$refs.div.offsetHeight)
+      // console.log(this.$refs.div.offsetWidth)
+      // console.log(this.$refs.div.offsetHeight)
     },
   },
 };

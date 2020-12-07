@@ -10,6 +10,7 @@ import './style/reset.css';
 import './mock/mockServer'
 import './style/iconfont.css'
 import './plugins/element.js';
+import "swiper/swiper-bundle.min.css";
 Vue.config.productionTip = false;
 
 new Vue({

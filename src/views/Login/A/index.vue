@@ -24,7 +24,7 @@
       </div>
     </form>
     <div>
-      <button class="login-btn" @click="login">登录</button>
+      <button class="login-btn" @click="logins">登录</button>
     </div>
     <div class="login-register">
       <router-link to="/register" class="register">立刻注册</router-link>
@@ -45,7 +45,7 @@ export default {
     };
   },
   methods: {
-    login() {
+    logins() {
       const { phone, password } = this;
       if (/^1[345678]\d{9}$/.test(phone)) {
         this.isShow = false;
@@ -53,8 +53,8 @@ export default {
           this.isDown = false;
           reqLogin(phone, password)
             .then((res) => {
-              // console.log("res", res);
-              // console.log(res.name, res.token);
+              console.log("res", res);
+              console.log(res.name, res.token);
               this.$router.push({
                 path: "/",
                 name: name,
@@ -75,11 +75,11 @@ export default {
       }
     },
     Rememberpassword() {
-        if (localStorage.getItem("password")) {
-          localStorage.removeItem("password");
-        } else {
-          localStorage.setItem("password", this.password);
-        }
+      if (localStorage.getItem("password")) {
+        localStorage.removeItem("password");
+      } else {
+        localStorage.setItem("password", this.password);
+      }
     },
   },
   mounted() {

@@ -44,7 +44,6 @@ export default {
       phone: "",
       password: "",
       code: "",
-      num: 5,
     };
   },
   methods: {

@@ -1,12 +1,12 @@
 <template>
-  <div class="swiper-container">
+  <div class="swiper-container" ref="container">
     <div class="swiper-wrapper">
       <div
         class="swiper-slide"
-        v-for="skuImage in skuImageList"
+        v-for="(skuImage,index) in skuImageList"
         :key="skuImage.id"
       >
-        <img :src="`${skuImage.imgUrl}`" />
+        <img :src="skuImage.imgUrl" @click="updateCurrentImgIndex(index)" />
       </div>
     </div>
     <div class="swiper-button-next"></div>
@@ -15,25 +15,33 @@
 </template>
 
 <script>
-import Swiper from "swiper";
+import Swiper, { Navigation } from "swiper";
+
+// Swiper6默认只有核心轮播图功能，其他功能没有
+// 要使用其他功能，需要先加载
+Swiper.use([Navigation]);
 export default {
   name: "ImageList",
   props: {
     skuImageList: Array,
+    updateCurrentImgIndex: Function,
   },
-  mounted() {
-    var mySwiper = new Swiper(".swiper-container", {
-      slideToClickedSlide: true,
-      centeredSlides: true,
-      slidesPerView: 5,
-      navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
-      },
-      loop: true,
-      slidesPerGroup: 2,
-      loopFillGroupWithBlank: true,
-    });
+  watch: {
+    skuImageList() {
+      // 一旦触发，说明值发生了变化，此时就有数据
+      // 等数据回来，渲染完成DOM元素
+      this.$nextTick(() => {
+        new Swiper(this.$refs.container, {
+          slidesPerView: 5,
+          spaceBetween: 30,
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          slidesPerGroup: 5,
+        });
+      });
+    },
   },
 };
 </script>

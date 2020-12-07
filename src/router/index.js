@@ -7,6 +7,8 @@ import Search from '../views/Search';
 import A from '../views/Login/A';
 import B from '../views/Login/B';
 import Detail from '../views/Detail';
+import AddCartSuccess from "../views/AddCartSuccess" 
+import ShopCart from '../views/ShopCart'
 // 重写push和replace方法
 // 目的：为了让编程式导航重复点击时不报错
 const push = VueRouter.prototype.push;
@@ -86,7 +88,17 @@ export default new VueRouter({
 			name: 'detail',
 			path: '/detail/:id',
 			component: Detail
-		}
+		},
+		{
+			name:"AddCartSuccess",
+			path:"/addCartSuccess",
+			component:AddCartSuccess
+		},
+		{
+			name:"ShopCart",
+			path:"/ShopCart",
+			component:ShopCart
+		},
 	],
 	// 每次切换路由页面滚动条位置
 	scrollBehavior() {
