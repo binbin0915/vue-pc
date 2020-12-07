@@ -10,23 +10,31 @@
       <div class="register-content">
         <div class="register-content-top top">
           <label for="">手机号:</label>
-          <input type="text" placeholder="请输入你的手机号" v-model="phone" />
+          <ValidationProvider rules="required|length|phone" v-slot="{ errors }">
+            <input
+              type="text"
+              placeholder="请输入你的手机号"
+              v-model="user.phone"
+            />
+            <span class="prompt">{{ errors[0] }}</span>
+          </ValidationProvider>
         </div>
         <div class="top">
           <label for="">验证码:</label>
-          <input type="text" v-model="code" />
+          <input type="text" v-model="user.code" />
           <img src="/api/user/passport/code" alt="" />
         </div>
         <div class="top">
           <label for="">登陆密码:</label>
-          <input type="password" v-model="password" />
+          <input type="password" v-model="user.password" />
+          <span class="prompt"></span>
         </div>
         <div class="top">
           <label for="">确认密码:</label>
-          <input type="password" />
+          <input type="password" v-model="user.repassword" />
         </div>
         <div class="register-content-contros">
-          <input type="checkbox" name="协议" class="contros" />
+          <input type="checkbox" name="协议" class="contros" v-model="isAgree"/>
           <span>同意协议并注册《尚品汇用户协议》</span>
           <button @click="register" class="register-btn">注册</button>
         </div>
@@ -36,35 +44,78 @@
 </template>
 
 <script>
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+
+extend("required", {
+  ...required,
+  message: "手机号必须填写",
+});
+extend("length", {
+  validate(value) {
+    return value.length === 11;
+  },
+  message: "长度必须为11位", // 错误信息
+});
+extend("phone", {
+  validate(value) {
+    return /^1(3[0-9]|4[01456879]|5[0-3,5-9]|6[2567]|7[0-8]|8[0-9]|9[0-3,5-9])\d{8}$/.test(
+      value
+    );
+  },
+  message:"手机号不符合规范"
+});
 import { reqRegister } from "@api/register.js";
 export default {
   name: "Register",
   data() {
     return {
-      phone: "",
-      password: "",
-      code: "",
+      user: {
+        phone: "",
+        password: "",
+        repassword: "",
+        code: "",
+        isAgree:false
+      },
     };
   },
   methods: {
     register() {
-      const { phone, password, code } = this;
-      reqRegister(phone, password, code)
-        .then((res) => {
-          console.log(res);
-              this.$router.push({
-                path: "login",
-              });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      const { phone, password, repassword, code,isAgree } = this.user;
+      if(!isAgree){
+        // 这个message是elementui库的，在plugins中引入
+        this.$message("请同意用户协议")
+      }
+      if (password !== repassword) {
+        this.$message("两次密码输入不一致！");
+        return;
+      }
+      if (code.length !== 4) {
+        this.$message("验证码长度不符合");
+        return;
+      }
+      // reqRegister(phone, password, code)
+      //   .then((res) => {
+      //     console.log(res);
+      //     this.$router.push({
+      //       path: "login",
+      //     });
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
     },
+  },
+  components: {
+    ValidationProvider,
   },
 };
 </script>
 
 <style lang="less" scoped>
+.prompt {
+  color: red;
+}
 .register-contain {
   width: 1200px;
   height: 445px;
@@ -119,14 +170,14 @@ export default {
   height: 12px;
   vertical-align: middle;
 }
-.register-btn{
+.register-btn {
   // display:block;
   // position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 250px;
-  background-color:red;
+  background-color: red;
   border: 1px solid red;
   outline: none;
   height: 40px;
