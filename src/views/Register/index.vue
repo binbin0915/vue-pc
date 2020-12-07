@@ -22,7 +22,12 @@
         <div class="top">
           <label for="">验证码:</label>
           <input type="text" v-model="user.code" />
-          <img src="/api/user/passport/code" alt="" />
+          <img
+            src="/api/user/passport/code"
+            alt=""
+            @click="Verification"
+            ref="code"
+          />
         </div>
         <div class="top">
           <label for="">登陆密码:</label>
@@ -34,7 +39,12 @@
           <input type="password" v-model="user.repassword" />
         </div>
         <div class="register-content-contros">
-          <input type="checkbox" name="协议" class="contros" v-model="isAgree"/>
+          <input
+            type="checkbox"
+            name="协议"
+            class="contros"
+            v-model="user.isAgree"
+          />
           <span>同意协议并注册《尚品汇用户协议》</span>
           <button @click="register" class="register-btn">注册</button>
         </div>
@@ -63,9 +73,8 @@ extend("phone", {
       value
     );
   },
-  message:"手机号不符合规范"
+  message: "手机号不符合规范",
 });
-import { reqRegister } from "@api/register.js";
 export default {
   name: "Register",
   data() {
@@ -75,35 +84,37 @@ export default {
         password: "",
         repassword: "",
         code: "",
-        isAgree:false
+        isAgree: false,
       },
     };
   },
   methods: {
-    register() {
-      const { phone, password, repassword, code,isAgree } = this.user;
-      if(!isAgree){
-        // 这个message是elementui库的，在plugins中引入
-        this.$message("请同意用户协议")
+    Verification() {
+      this.$refs.code.src = `/api/user/passport/code`;
+    },
+    async register() {
+      try {
+        const { phone, password, repassword, code, isAgree } = this.user;
+        if (!isAgree) {
+          // 这个message是elementui库的，在plugins中引入
+          this.$message.error("请同意用户协议");
+        }
+        if (password !== repassword) {
+          this.$message.error("两次密码输入不一致！");
+          return;
+        }
+        if (code.length !== 4) {
+          this.$message.error("验证码长度不符合");
+          return;
+        }
+        await this.$store.dispatch("register", { phone, password, code });
+        this.$router.push("/login");
+      } catch {
+        this.$message.error("用户已被注册");
+        this.user.password = "";
+        this.user.repassword = "";
+        this.Verification();
       }
-      if (password !== repassword) {
-        this.$message("两次密码输入不一致！");
-        return;
-      }
-      if (code.length !== 4) {
-        this.$message("验证码长度不符合");
-        return;
-      }
-      // reqRegister(phone, password, code)
-      //   .then((res) => {
-      //     console.log(res);
-      //     this.$router.push({
-      //       path: "login",
-      //     });
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
     },
   },
   components: {

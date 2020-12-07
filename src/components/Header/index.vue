@@ -4,14 +4,14 @@
       <div class="header-header">
         <div class="header-left">
           <p>京东欢迎您！</p>
-          <p>
-            <span>{{ name }}</span>
-            <a @click="del" href="###" v-show="name">退出</a>
-            <span v-show="!name">请</span>
-            <router-link to="/login" v-show="!name">登录</router-link>
-            <router-link to="/register" class="register" v-show="!name"
-              >免费注册</router-link
-            >
+          <p v-if="$store.state.user.name">
+            <span>{{ $store.state.user.name }}</span>
+            <a @click="del" href="###">退出</a>
+          </p>
+          <p v-else>
+            <span>请</span>
+            <router-link to="/login">登录</router-link>
+            <router-link to="/register" class="register">免费注册</router-link>
           </p>
         </div>
         <div class="header-right">
@@ -53,17 +53,19 @@ export default {
   name: "Header",
 
   data() {
-    const name = localStorage.getItem("name");
+    // const name = localStorage.getItem("name");
     return {
       // 搜索的内容
       searchText: "",
-      name,
+      // name,
     };
   },
   methods: {
     del() {
-      localStorage.removeItem("name");
       if (window.confirm(`是否要退出当前登录`)) {
+        this.$router.replace("/");
+        localStorage.removeItem("name");
+        localStorage.removeItem("token");
         location.reload([true]);
       }
     },

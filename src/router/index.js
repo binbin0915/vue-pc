@@ -96,7 +96,7 @@ export default new VueRouter({
 		},
 		{
 			name:"ShopCart",
-			path:"/ShopCart",
+			path:"/shopcart",
 			component:ShopCart
 		},
 	],

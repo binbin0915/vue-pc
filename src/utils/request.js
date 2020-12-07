@@ -36,7 +36,7 @@ const instance = axios.create({
 });
 
 const userTempId = getuserTempId()
-// const userTempId = localStorage.getItem("token")
+const token = localStorage.getItem("token")
 // 设置请求拦截器
 instance.interceptors.request.use(
 	(config) => {
@@ -47,6 +47,7 @@ instance.interceptors.request.use(
 		NProgress.start();
 
 		config.headers.userTempId = userTempId;
+		config.headers.token = token;
 
 		return config;
 	}

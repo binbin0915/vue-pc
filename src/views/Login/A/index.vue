@@ -2,22 +2,23 @@
   <div class="login-content">
     <form action="xxxx">
       <div class="login-content-input">
-        <i class="el-icon-user-solid"></i>
-        <input type="text" placeholder="手机号" v-model="phone" />
-        <p class="span" v-show="isShow">请输入11位手机号!</p>
+        <ValidationProvider rules="required|length|phone" v-slot="{ errors }">
+          <i class="el-icon-user-solid"></i>
+          <input type="text" placeholder="手机号" v-model="phone" />
+          <span :style="{ color: 'red',display: 'flex' }">{{ errors[0] }}</span>
+        </ValidationProvider>
       </div>
       <div class="login-content-input">
+        <ValidationProvider rules="password" v-slot="{errors}">
         <i class="el-icon-lock"></i>
-
         <input type="password" placeholder="请输入密码" v-model="password" />
-        <p class="span" v-show="isDown">请输入6-12位数字组合的密码</p>
+        <span :style="{ color: 'red',display: 'flex' }">{{errors[0]}}</span>
+        </ValidationProvider>
       </div>
-      <label for="">
-        <input type="checkbox" @click="Rememberpassword" />记住密码
-      </label>
+      <label for="" :style="{float:'left'}" > <input type="checkbox" />记住密码 </label>
       <div class="login-content-lable">
         <label for="">
-          <input type="checkbox" />
+          <input type="checkbox" v-model="isCheck" />
           自动登录
         </label>
         <span>忘记密码？</span>
@@ -33,58 +34,81 @@
 </template>
 
 <script>
-import { reqLogin } from "@api/user";
+import { ValidationProvider, extend } from "vee-validate";
+import { required } from "vee-validate/dist/rules";
+import { mapState } from "vuex";
+extend("required", {
+  ...required,
+  message: "手机号必须填写",
+});
+extend("length",{
+  validate(value){
+    return value.length === 11
+  },
+  message:"长度必须为11位"
+})
+extend("phone", {
+  validate(value) {
+    return /^1(3[0-9]|4[01456879]|5[0-3,5-9]|6[2567]|7[0-8]|8[0-9]|9[0-3,5-9])\d{8}$/.test(
+      value
+    );
+  },
+  message: "手机号不符合规范",
+});
+extend("password", {
+  ...required,
+  message: "密码必须填写",
+});
 export default {
   name: "A",
   data() {
     return {
       phone: "",
       password: "",
-      isShow: false,
-      isDown: false,
+      isAutoLogin: false,
+      isCheck: true,
     };
   },
-  methods: {
-    logins() {
-      const { phone, password } = this;
-      if (/^1[345678]\d{9}$/.test(phone)) {
-        this.isShow = false;
-        if (/^[\d]{6,12}$/.test(password)) {
-          this.isDown = false;
-          reqLogin(phone, password)
-            .then((res) => {
-              console.log("res", res);
-              console.log(res.name, res.token);
-              this.$router.push({
-                path: "/",
-                name: name,
-              });
-              location.reload([true]);
-              // sessionStorage.setItem(res.name, res.token);
-              localStorage.setItem("name", res.name);
-              localStorage.setItem("token", res.token);
-            })
-            .catch((err) => {
-              console.log("err", err);
-            });
-        } else {
-          this.isDown = true;
-        }
-      } else {
-        this.isShow = true;
-      }
-    },
-    Rememberpassword() {
-      if (localStorage.getItem("password")) {
-        localStorage.removeItem("password");
-      } else {
-        localStorage.setItem("password", this.password);
-      }
-    },
+  computed: {
+    ...mapState({
+      token: (state) => state.user.token,
+      name: (state) => state.user.name,
+    }),
   },
-  mounted() {
-    const password = localStorage.getItem("password");
-    this.password = password;
+  created() {
+    if (this.isCheck && this.token) {
+      this.$router.replace("/");
+    }
+  },
+  methods: {
+    async logins() {
+      try {
+        if (this.isAutoLogin) return;
+        this.isAutoLogin = true;
+        const { phone, password } = this;
+        await this.$store.dispatch("login", { phone, password });
+        localStorage.setItem("token", this.token);
+        localStorage.setItem("name", this.name);
+        this.$router.replace("/");
+        // location.reload([true]);
+      } catch {
+        this.isAutoLogin = false;
+      }
+    },
+    // Rememberpassword() {
+    //   if (localStorage.getItem("password")) {
+    //     localStorage.removeItem("password");
+    //   } else {
+    //     localStorage.setItem("password", this.password);
+    //   }
+    // },
+  },
+  // mounted() {
+  //   const password = localStorage.getItem("password");
+  //   this.password = password;
+  // },
+  components: {
+    ValidationProvider,
   },
 };
 </script>

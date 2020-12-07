@@ -36,23 +36,29 @@
             <button
               href="javascript:void(0)"
               class="mins"
-              :disabled="cart.skuNum < 2"
+              :disabled="cart.skuNum === 1"
               @click="updateCart(cart.skuId, -1)"
-              >-</button
             >
+              -
+            </button>
             <input
               autocomplete="off"
               type="text"
               :value="cart.skuNum"
               minnum="1"
               class="itxt"
+              :style="{outline:'none'}"
+              @blur="update(cart.skuId, cart.skuNum, $event)"
+              @input="formatSkuNum"
             />
-            <a
+            <button
               href="javascript:void(0)"
-              class="plus"
+              :disabled="cart.skuNum === 100"
+              class="mins"
               @click="updateCart(cart.skuId, 1)"
-              >+</a
             >
+              +
+            </button>
           </li>
           <li class="cart-list-con6">
             <span class="sum">{{ cart.skuNum * cart.skuPrice }}</span>
@@ -118,9 +124,9 @@ export default {
         );
       },
       set(val) {
-          this.cartList.map((cart) => {
-            cart.isChecked = val ? 1 : 0
-          });
+        this.cartList.map((cart) => {
+          cart.isChecked = val ? 1 : 0;
+        });
       },
     },
     ...mapState({
@@ -140,12 +146,32 @@ export default {
     },
   },
   methods: {
-   async delskuName() {
-      let skuName = this.cartList.filter((cart)=>{
-        cart.isChecked === "0"
-      })
-      console.log(skuName)
-    //  await this.delCart()
+    // 让数量框只能输入数字
+    formatSkuNum(e) {
+     let skuNum = e.target.value.replace(/\D+/g, "");
+      if(skuNum < 1) {
+        // 商品数量不能小于1
+        skuNum = 1
+      } else if(skuNum > 100) {
+        // 同时商品库存不能大于100
+        skuNum  = 100
+      }
+      e.target.value = skuNum
+    },
+
+    // 输入改变商品数量
+    update(skuId, skuNum, e) {
+      // 当前商品数量是10，e.target.value 6 --> -4  6 - 10
+      if(+e.target.value === skuNum) return
+      this.updateCartCount({ skuId, skuNum: e.target.value - skuNum });
+    },
+
+    async delskuName() {
+      let skuName = this.cartList.filter((cart) => {
+        cart.isChecked === "0";
+      });
+      console.log(skuName);
+      //  await this.delCart()
     },
     ...mapActions([
       "getCartList",
@@ -153,6 +179,7 @@ export default {
       "delCart",
       "updateCartCheck",
     ]),
+
     async updateCart(skuId, skuNum) {
       // 更新商品
       await this.updateCartCount({ skuId, skuNum });
@@ -171,7 +198,7 @@ export default {
 
     Checked(skuId, isChecked) {
       // this.updateCartCheck({ skuId, isChecked });
-      console.log(isChecked)
+      console.log(isChecked);
       // this.getCartList();
     },
   },
@@ -284,7 +311,7 @@ export default {
             width: 6px;
             text-align: center;
             padding: 8px;
-             outline: none;
+            outline: none;
           }
           input {
             border: 1px solid #ddd;
