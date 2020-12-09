@@ -3,28 +3,20 @@
     <h3 class="title">填写并核对订单信息</h3>
     <div class="content">
       <h5 class="receive">收件人信息</h5>
-      <div class="address clearFix">
-        <span class="username selected">张三</span>
+      <div
+        class="address clearFix"
+        v-for="tar in trade.userAddressList"
+        :key="tar.id"
+      >
+        <span
+          :class="{ username: true, selected: tar.id === selectAddressId }"
+          @click="selectAddressId = tar.id"
+          >{{ tar.consignee }}</span
+        >
         <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">15010658793</span>
-          <span class="s3">默认地址</span>
-        </p>
-      </div>
-      <div class="address clearFix">
-        <span class="username selected">李四</span>
-        <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">13590909098</span>
-          <span class="s3">默认地址</span>
-        </p>
-      </div>
-      <div class="address clearFix">
-        <span class="username selected">王五</span>
-        <p>
-          <span class="s1">北京市昌平区宏福科技园综合楼6层</span>
-          <span class="s2">18012340987</span>
-          <span class="s3">默认地址</span>
+          <span class="s1">{{ tar.userAddress }}</span>
+          <span class="s2">{{ tar.phoneNum }}</span>
+          <span class="s3" v-if="+tar.isDefault">默认地址</span>
         </p>
       </div>
       <div class="line"></div>
@@ -46,26 +38,26 @@
         <h5>商品清单</h5>
         <ul
           class="list clearFix"
-          v-for="cart in this.$route.params"
-          :key="cart.id"
+          v-for="detailArray in trade.detailArrayList"
+          :key="detailArray.skuId"
         >
           <li>
             <img
               :style="{ width: 100 + `px`, height: 100 + `px` }"
-              :src="cart.imgUrl"
+              :src="detailArray.imgUrl"
               alt=""
             />
           </li>
           <li>
             <p>
-              {{ cart.skuName }}
+              {{ detailArray.skuName }}
             </p>
             <h4>7天无理由退货</h4>
           </li>
           <li>
-            <h3>￥{{ cart.skuPrice }}</h3>
+            <h3>￥{{ detailArray.orderPrice }}</h3>
           </li>
-          <li>X{{ cart.skuNum }}</li>
+          <li>X{{ detailArray.skuNum }}</li>
           <li>有货</li>
         </ul>
       </div>
@@ -74,6 +66,7 @@
         <textarea
           placeholder="建议留言前先与商家沟通确认"
           class="remarks-cont"
+          v-model="content"
         ></textarea>
       </div>
       <div class="line"></div>
@@ -87,10 +80,10 @@
       <ul>
         <li>
           <b
-            ><i>{{ total }}</i
+            ><i>{{ trade.totalNum }}</i
             >件商品，总商品金额</b
           >
-          <span>¥5399.00</span>
+          <span>¥{{ trade.totalAmount }}</span>
         </li>
         <li>
           <b>返现：</b>
@@ -98,44 +91,83 @@
         </li>
         <li>
           <b>运费：</b>
-          <span>0.00</span>
+          <span>20.00</span>
         </li>
       </ul>
     </div>
     <div class="trade">
-      <div class="price">应付金额:<span>¥5399.00</span></div>
+      <div class="price">
+        应付金额:<span>¥{{ trade.totalAmount }}</span>
+      </div>
       <div class="receiveInfo">
         寄送至:
-        <span>北京市昌平区宏福科技园综合楼6层</span>
-        收货人：<span>张三</span>
-        <span>15010658793</span>
+        <span>{{ selectAddress.userAddress }}</span>
+        收货人：<span>{{ selectAddress.consignee }}</span>
+        &nbsp;
+        <span>电话：{{ selectAddress.phoneNum }}</span>
       </div>
     </div>
     <div class="sub clearFix">
-      <router-link class="subBtn" to="/pay">提交订单</router-link>
+      <button class="subBtn" @click="submit">提交订单</button>
     </div>
   </div>
 </template>
 
 <script>
+import { reqTrade, reqSubmitOrder } from "@api/trade";
 export default {
   name: "Trade",
-  mounted() {
-    // console.log(this.$route.params);
-    // console.log(Object.values(this.$route.params));
-    const cartList = Object.values(this.$route.params);
-    console.log(this.$route.params)
-    console.log(cartList);
+  data() {
+    return {
+      trade: {},
+      selectAddressId: -1,
+      content: "",
+    };
   },
   computed: {
-    total() {
-      return this.cartList
+    selectAddress() {
+      const {
+        selectAddressId,
+        trade: { userAddressList },
+      } = this;
+      return userAddressList
+        ? userAddressList.find((address) => address.id === selectAddressId)
+        : {};
     },
-    // 商品总价
-    totalPrice() {
-      return this.cartList
-        .filter((cart) => cart.isChecked === 1)
-        .reduce((p, c) => p + c.skuNum * c.skuPrice, 0);
+  },
+  async mounted() {
+    const trade = await reqTrade();
+    this.trade = trade;
+    // 让selectAddressId的值等于有2（isDefault等于1的数据的id）
+    this.selectAddressId = trade.userAddressList.find(
+      (address) => address.isDefault === "1"
+    ).id;
+    // console.log(this.trade);
+  },
+
+  methods: {
+    async submit() {
+      // const { tradeNo, consignee, detailArrayList } = this.trade;
+      // const { phoneNum, userAddress } = this.selectAddress;
+      const { tradeNo, consignee, detailArrayList } = this.trade;
+      const { phoneNum, userAddress } = this.selectAddress;
+      // 提交订单
+      const cart = await reqSubmitOrder({
+        tradeNo,
+        consignee: consignee,
+        consigneeTel: phoneNum,
+        deliveryAddress: userAddress,
+        paymentWay: "ONLINE",
+        orderComment: this.content,
+        orderDetailList: detailArrayList,
+      });
+      // 跳转路由
+      this.$router.push({
+        path: "/pay",
+        query: {
+          cart,
+        }
+      });
     },
   },
 };

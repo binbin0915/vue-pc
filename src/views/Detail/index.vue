@@ -390,6 +390,7 @@ export default {
           skuId: this.skuInfo.id,
           skuNum: this.skuNum,
         });
+        
         // 一旦加入购物车，跳转到购物车成功页面
         this.$router.push({
           path: `/addcartsuccess?skuNum=${this.skuNum}`,

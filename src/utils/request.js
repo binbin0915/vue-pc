@@ -5,7 +5,7 @@ import axios from 'axios';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import { Message } from 'element-ui';
-import getuserTempId from "@utils/getuserTempId"
+// import getuserTempId from "@utils/getuserTempId"
 import store from "../store"
 
 /* 

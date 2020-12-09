@@ -17,9 +17,7 @@
               type="checkbox"
               name="chk_list"
               :checked="cart.isChecked"
-              v-model="cart.isChecked"
-              v-bind:true-value="checka"
-              v-bind:false-value="checkb"
+              @change="isCheck(cart)"
             />
           </li>
           <li class="cart-list-con2">
@@ -37,9 +35,7 @@
               class="mins"
               :disabled="cart.skuNum === 1"
               @click="updateCart(cart.skuId, -1)"
-            >
-              -
-            </button>
+            ></button>
             <input
               autocomplete="off"
               type="text"
@@ -90,7 +86,7 @@
           <i class="summoney">{{ totalPrice }}</i>
         </div>
         <div class="sumbtn">
-          <a class="sum-btn" @click="settlement">结算</a>
+          <button class="sum-btn" @click="submit">结算</button>
         </div>
       </div>
     </div>
@@ -101,25 +97,16 @@
 import { mapState, mapActions } from "vuex";
 export default {
   name: "ShopCart",
-  data() {
-    return {
-      checka: 1,
-      checkb: 0,
-    };
-  },
-  computed: {
-    // 计算当前选中的有多少个
-    completedCount() {
-      return this.cartList.reduce((p, c) => {
-        return p + (c.isChecked === 1 ? 1 : 0);
-      }, 0);
-    },
 
+  computed: {
+    ...mapState({
+      cartList: (state) => state.shopcart.cartList,
+    }),
     // 计算全选的值
     isShow: {
       get() {
         return (
-          this.cartList.length === this.completedCount &&
+          this.cartList.every((cart) => cart.isChecked === 1) &&
           this.cartList.length !== 0
         );
       },
@@ -129,9 +116,7 @@ export default {
         });
       },
     },
-    ...mapState({
-      cartList: (state) => state.shopcart.cartList,
-    }),
+
     // 商品总数
     total() {
       return this.cartList
@@ -177,7 +162,7 @@ export default {
       "getCartList",
       "updateCartCount",
       "delCart",
-      "updateCartCheck",
+      "getCheckCart",
     ]),
 
     async updateCart(skuId, skuNum) {
@@ -195,20 +180,15 @@ export default {
       }
     },
 
-    // Checked(skuId, isChecked) {
-    //   // this.updateCartCheck({ skuId, isChecked });
-    //   console.log(isChecked);
-    //   // this.getCartList();
-    // },
+    isCheck(cart) {
+      const skuId = cart.skuId;
+      const isChecked = cart.isChecked === 1 ? 0 : 1;
+      this.getCheckCart({ skuId, isChecked });
+    },
 
-    // 结算
-    settlement(){
-      this.$router.push({
-        name:"Trade",
-        params:this.cartList
-      })
-      console.log(this.cartList)
-    }
+    submit() {
+      this.$router.push("/trade");
+    },
   },
   mounted() {
     this.getCartList();
@@ -414,7 +394,9 @@ export default {
       .sumbtn {
         float: right;
 
-        a {
+        button {
+          outline: none;
+          border: none;
           display: block;
           position: relative;
           width: 96px;

@@ -63,7 +63,7 @@ export default {
   methods: {
     del() {
       if (window.confirm(`是否要退出当前登录`)) {
-        this.$router.replace("/");
+        // this.$router.replace("/");
         localStorage.removeItem("name");
         localStorage.removeItem("token");
         location.reload([true]);

@@ -18,25 +18,28 @@ export default {
 
 		async updateCartCount({ commit }, { skuId, skuNum }) {
 			await reqUpdateCartCount(skuId, skuNum);
-			commit("UPDATE_CART_COUNT",{skuId, skuNum})
+			commit('UPDATE_CART_COUNT', { skuId, skuNum });
 		},
 
 		// 商品选中状态
 		// actions函数只能接受外面的一个参数
 		// this.updateCartCheck(a, b) 第二个参数b actions函数是接受不到的
-		async updateCartCheck({ commit }, { skuId, isChecked }) {
-			// 发送请求 --> 更新服务器数据
+		// async updateCartCheck({ commit }, { skuId, isChecked }) {
+		// 	// 发送请求 --> 更新服务器数据
+		// 	await reqUpdateCartCheck(skuId, isChecked);
+		// 	// 1. 手动更新vuex的数据 --> 页面就会重新渲染
+		// 	// 2. 重新请求所有购物车数据
+		// 	commit('UPDATECARTCHECK', { skuId, isChecked });
+		// },
+		async getCheckCart({ commit }, { skuId, isChecked }) {
 			await reqUpdateCartCheck(skuId, isChecked);
-			// 1. 手动更新vuex的数据 --> 页面就会重新渲染
-			// 2. 重新请求所有购物车数据
-			commit("UPDATECARTCHECK",{skuId, isChecked})
-			console.log(commit);
+			commit('GET_CHECK_CART', { skuId, isChecked });
 		},
 
 		// 删除商品
-		async delCart({commit},skuId) {
-			await reqDelCart(skuId)
-			commit("DELCART",skuId)
+		async delCart({ commit }, skuId) {
+			await reqDelCart(skuId);
+			commit('DELCART', skuId);
 			// console.log(commit)
 		}
 	},
@@ -46,29 +49,37 @@ export default {
 			state.cartList = cartList;
 		},
 
+		// 数量
 		UPDATE_CART_COUNT(state, { skuId, skuNum }) {
 			state.cartList = state.cartList.map((cart) => {
 				if (cart.skuId === skuId) {
-					cart.skuNum += skuNum
+					cart.skuNum += skuNum;
 				}
-				return cart
-			})
+				return cart;
+			});
 		},
 
-		DELCART(state,skuId) {
+		DELCART(state, skuId) {
 			// 手动更新vux数据
-			state.cartList = state.cartList.filter((cart) => 
-				cart.skuId !== skuId
-			)
+			state.cartList = state.cartList.filter((cart) => cart.skuId !== skuId);
 		},
 
-
-		UPDATECARTCHECK(state,{ skuId, isChecked }) {
-			state.cartList = state.cartList.map((cart)=>{
-				if((cart.skuId === skuId) && isChecked === 1){
-					cart.isChecked =!0
+		// 选中状态
+		// UPDATECARTCHECK(state, { skuId, isChecked }) {
+		// 	state.cartList = state.cartList.map((cart) => {
+		// 		if (cart.skuId === skuId) {
+		// 			cart.isChecked = isChecked;
+		// 		}
+		// 		return cart
+		// 	});
+		// }
+		GET_CHECK_CART(state, { skuId, isChecked }) {
+			state.cartList = state.cartList.map((cart) => {
+				if (cart.skuId === skuId) {
+					cart.isChecked = isChecked;
 				}
-			})
+				return cart;
+			});
 		}
 	}
 };

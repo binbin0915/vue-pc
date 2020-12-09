@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { Button,Tooltip,Popover,Carousel,CarouselItem,Pagination,InputNumber,Message } from 'element-ui'
+import { Button,Tooltip,Popover,Carousel,CarouselItem,Pagination,InputNumber,Message,MessageBox } from 'element-ui'
 
 Vue.use(Button)
 Vue.use(Tooltip)
@@ -9,3 +9,5 @@ Vue.use(CarouselItem)
 Vue.use(Pagination)
 Vue.use(InputNumber)
 Vue.prototype.$message = Message
+Vue.prototype.$msgbox = MessageBox;
+Vue.prototype.$alert = MessageBox.alert;
