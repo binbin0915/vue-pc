@@ -99,19 +99,19 @@
                         <a href="#" class="service">售后申请</a>
                       </div>
                     </td>
-                    <td rowspan="2" width="8%" class="center">
+                    <td rowspan="1" width="8%" class="center">
                       {{ cart.consignee }}
                     </td>
-                    <td rowspan="2" width="13%" class="center">
+                    <td rowspan="1" width="13%" class="center">
                       <ul class="unstyled">
                         <li>总金额¥{{ order.orderPrice * order.skuNum }}</li>
                         <li>在线支付</li>
                       </ul>
                     </td>
-                    <td rowspan="2" width="8%" class="center">
+                    <td rowspan="1" width="8%" class="center">
                       <a href="#" class="btn">{{ cart.orderStatusName }}</a>
                     </td>
-                    <td rowspan="2" width="13%" class="center">
+                    <td rowspan="1" width="13%" class="center">
                       <ul class="unstyled">
                         <li>
                           <a href="mycomment.html" target="_blank">评价|晒单</a>
@@ -225,11 +225,6 @@ export default {
     ...mapState({
       cartList: (state) => state.auth.cartList,
     }),
-    total() {
-     return this.cartList.records.map(()=>{
-
-      })
-    },
   },
   methods: {
     ...mapActions(["getauth"]),
